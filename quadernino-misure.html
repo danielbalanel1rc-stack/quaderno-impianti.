@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1B1D21">
+<title>Quadernino Misure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#1B1D21;
+  --bg-panel:#242629;
+  --bg-elevated:#2D2F34;
+  --bg-elevated2:#35373D;
+  --line:#3C3E44;
+  --text:#ECE9E2;
+  --text-dim:#9A9DA4;
+  --text-faint:#6B6E75;
+  --accent:#F2A93B;
+  --accent-dim:#B9822B;
+  --accent-ink:#1B1D21;
+  --steel:#5FA8D3;
+  --success:#5FB37E;
+  --danger:#E0685F;
+  --lcd-bg:#14171A;
+  --lcd-fg:#8CF29B;
+  --radius:10px;
+  --font-display:'Barlow Condensed',sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  --font-body:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  min-height:100vh;
+  -webkit-tap-highlight-color:transparent;
+}
+button, input, textarea{ font-family:inherit; }
+h1,h2,h3{ font-family:var(--font-display); font-weight:600; letter-spacing:0.02em; margin:0; }
+
+#app{ max-width:760px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; }
+
+header.topbar{
+  position:sticky; top:0; z-index:20;
+  background:linear-gradient(180deg,var(--bg) 0%, var(--bg) 80%, transparent 100%);
+  padding:14px 16px 8px 16px;
+  display:flex; align-items:center; gap:10px;
+}
+header.topbar .back{
+  background:none;border:none;color:var(--text-dim);font-size:22px;line-height:1;
+  padding:6px 8px;margin-left:-8px;cursor:pointer;border-radius:8px;
+}
+header.topbar .back:active{background:var(--bg-elevated);}
+header.topbar .titles{flex:1; min-width:0;}
+header.topbar .eyebrow{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--accent); margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+header.topbar h1{ font-size:26px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+header.topbar .gear{
+  background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;
+  padding:8px;border-radius:8px;
+}
+header.topbar .gear:active{background:var(--bg-elevated);}
+
+main{ flex:1; padding:8px 16px 100px 16px; }
+
+.card-list{ display:flex; flex-direction:column; gap:10px; margin-top:6px; }
+.card{
+  background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--radius);
+  padding:14px 14px; display:flex; align-items:center; gap:12px; cursor:pointer;
+}
+.card:active{ background:var(--bg-elevated); }
+.card .idx{
+  font-family:var(--font-mono); font-size:12px; color:var(--accent);
+  border:1px solid var(--accent-dim); border-radius:6px; padding:2px 6px; flex-shrink:0;
+}
+.card .main{ flex:1; min-width:0; }
+.card .name{ font-size:18px; font-weight:600; }
+.card .meta{ font-family:var(--font-mono); font-size:12px; color:var(--text-dim); margin-top:2px; }
+.card .chev{ color:var(--text-faint); font-size:18px; }
+
+.empty-state{
+  border:1px dashed var(--line); border-radius:var(--radius); padding:32px 20px;
+  text-align:center; color:var(--text-dim); margin-top:16px;
+}
+.empty-state .big{ font-family:var(--font-display); font-size:22px; color:var(--text); margin-bottom:6px; }
+.empty-state p{ margin:4px 0 0 0; font-size:14px; }
+
+.btn{
+  border:none; border-radius:9px; padding:12px 16px; font-size:15px; font-weight:600;
+  cursor:pointer; display:inline-flex; align-items:center; gap:8px; justify-content:center;
+}
+.btn-accent{ background:var(--accent); color:var(--accent-ink); }
+.btn-accent:active{ background:var(--accent-dim); }
+.btn-ghost{ background:var(--bg-elevated); color:var(--text); border:1px solid var(--line); }
+.btn-ghost:active{ background:var(--bg-elevated2); }
+.btn-steel{ background:rgba(95,168,211,0.15); color:var(--steel); border:1px solid rgba(95,168,211,0.35); }
+.btn-danger{ background:rgba(224,104,95,0.12); color:var(--danger); border:1px solid rgba(224,104,95,0.3); }
+.btn-block{ width:100%; }
+.btn-sm{ padding:8px 12px; font-size:13px; border-radius:7px; }
+.fab-row{
+  position:fixed; bottom:0; left:0; right:0; z-index:20;
+  background:linear-gradient(0deg,var(--bg) 55%, transparent 100%);
+  padding:18px 16px 20px 16px;
+}
+.fab-row .inner{ max-width:760px; margin:0 auto; display:flex; gap:10px; }
+
+.section{ margin-top:22px; }
+.section-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:10px; }
+.section-head h2{ font-size:19px; color:var(--text); }
+.section-head .hint{ font-family:var(--font-mono); font-size:11px; color:var(--text-faint); }
+
+.misura-row{
+  background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--radius);
+  padding:10px; display:flex; gap:8px; align-items:center; margin-bottom:8px;
+}
+.misura-row input.nome{
+  background:transparent; border:none; color:var(--text-dim); font-size:13px;
+  width:38%; min-width:0; padding:6px 4px; border-bottom:1px solid transparent;
+}
+.misura-row input.nome:focus{ outline:none; border-bottom:1px solid var(--accent); color:var(--text); }
+.lcd{
+  flex:1; background:var(--lcd-bg); border-radius:7px; padding:8px 10px;
+  display:flex; align-items:center; border:1px solid #0B0D0F;
+}
+.lcd input.valore{
+  background:none; border:none; color:var(--lcd-fg); font-family:var(--font-mono);
+  font-size:16px; letter-spacing:0.03em; width:100%; padding:2px;
+}
+.lcd input.valore:focus{ outline:none; }
+.misura-row .del{
+  background:none;border:none;color:var(--text-faint);font-size:18px;cursor:pointer;padding:4px 6px;
+}
+.misura-row .del:active{ color:var(--danger); }
+.qty-box{
+  flex:0 0 54px; display:flex; flex-direction:column; align-items:center;
+}
+.qty-box input.qty{
+  width:100%; background:var(--bg-elevated); border:1px solid var(--line); border-radius:6px;
+  color:var(--accent); font-family:var(--font-mono); font-size:14px; text-align:center; padding:6px 2px;
+}
+.qty-box input.qty:focus{ outline:none; border-color:var(--accent); }
+.qty-box .qty-label{ font-size:9px; color:var(--text-faint); margin-top:2px; letter-spacing:0.05em; }
+
+.add-misura-btn{
+  width:100%; border:1px dashed var(--line); background:none; color:var(--text-dim);
+  border-radius:var(--radius); padding:12px; font-size:14px; cursor:pointer; margin-bottom:8px;
+}
+.add-misura-btn:active{ border-color:var(--accent); color:var(--accent); }
+
+.preset-row{ display:flex; gap:8px; margin-top:4px; }
+
+.foto-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+.foto-card{
+  background:var(--bg-panel); border:1px solid var(--line); border-radius:9px; overflow:hidden;
+}
+.foto-img{ position:relative; aspect-ratio:4/3; background:var(--bg-elevated); }
+.foto-img img{ width:100%; height:100%; object-fit:cover; display:block; }
+.foto-img .rm{
+  position:absolute; top:6px; right:6px; background:rgba(20,20,20,0.75); color:#fff;
+  border:none; border-radius:50%; width:26px; height:26px; font-size:15px; cursor:pointer;
+}
+.foto-caption{
+  width:100%; background:transparent; border:none; border-top:1px solid var(--line);
+  color:var(--text-dim); font-size:12.5px; padding:9px 10px; display:block;
+}
+.foto-caption:focus{ outline:none; color:var(--text); background:var(--bg-elevated); }
+.foto-add{
+  aspect-ratio:4/3; border:1px dashed var(--line); border-radius:9px; display:flex;
+  align-items:center; justify-content:center; color:var(--text-faint); font-size:28px; cursor:pointer;
+}
+.foto-add:active{ border-color:var(--accent); color:var(--accent); }
+.foto-card.selectable{ cursor:pointer; }
+.foto-card.selected .foto-img{ outline:3px solid var(--accent); outline-offset:-3px; }
+.foto-check{
+  position:absolute; top:6px; left:6px; width:24px; height:24px; border-radius:50%;
+  background:rgba(20,20,20,0.6); border:2px solid #fff; display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:14px; font-weight:700;
+}
+.foto-card.selected .foto-check{ background:var(--accent); border-color:var(--accent); color:var(--accent-ink); }
+.foto-actionbar{
+  position:sticky; bottom:0; z-index:15; display:flex; gap:8px; padding:10px 0;
+  background:linear-gradient(0deg,var(--bg) 70%, transparent 100%); margin-top:-6px;
+}
+.foto-actionbar .btn{ flex:1; }
+
+textarea.note{
+  width:100%; background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--radius);
+  color:var(--text); padding:12px; font-size:14px; min-height:90px; resize:vertical;
+}
+textarea.note:focus{ outline:none; border-color:var(--accent); }
+
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(10,11,13,0.7); z-index:50;
+  display:flex; align-items:flex-end; justify-content:center;
+}
+.modal{
+  background:var(--bg-panel); border-top-left-radius:16px; border-top-right-radius:16px;
+  width:100%; max-width:760px; padding:20px 18px calc(20px + env(safe-area-inset-bottom)) 18px;
+  border:1px solid var(--line); border-bottom:none;
+}
+.modal h3{ font-size:20px; margin-bottom:14px; }
+.modal input[type=text], .modal textarea{
+  width:100%; background:var(--bg-elevated); border:1px solid var(--line); border-radius:8px;
+  color:var(--text); padding:11px 12px; font-size:15px; margin-bottom:10px;
+}
+.modal input[type=text]:focus, .modal textarea:focus{ outline:none; border-color:var(--accent); }
+.modal .row{ display:flex; gap:10px; margin-top:6px; }
+.modal .row .btn{ flex:1; }
+.preset-field-item{
+  display:flex; align-items:center; gap:8px; background:var(--bg-elevated);
+  border-radius:7px; padding:8px 10px; margin-bottom:6px;
+}
+.preset-field-item span{ flex:1; font-size:14px; }
+.preset-field-item button{ background:none;border:none;color:var(--text-faint);font-size:16px;cursor:pointer; }
+
+.preset-pick{
+  border:1px solid var(--line); border-radius:9px; padding:12px; margin-bottom:8px;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+}
+.preset-pick .name{ font-weight:600; font-size:15px; }
+.preset-pick .fields{ font-family:var(--font-mono); font-size:11px; color:var(--text-dim); margin-top:2px; }
+
+#toast{
+  position:fixed; bottom:18px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--bg-elevated2); color:var(--text); padding:10px 18px; border-radius:20px;
+  font-size:13px; border:1px solid var(--line); opacity:0; pointer-events:none; transition:all .25s ease;
+  z-index:100;
+}
+#toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+#print-area{ display:none; }
+@media print{
+  body *{ visibility:hidden; }
+  #print-area, #print-area *{ visibility:visible; }
+  #print-area{ display:block; position:absolute; top:0; left:0; width:100%; padding:20px; color:#111; background:#fff; }
+  .p-head{ border-bottom:3px solid #111; padding-bottom:10px; margin-bottom:16px; }
+  .p-head .eyebrow{ font-family:monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:#555; }
+  .p-head h1{ font-size:26px; margin:2px 0 0 0; font-family:sans-serif; }
+  .p-table{ width:100%; border-collapse:collapse; margin-bottom:18px; }
+  .p-table td, .p-table th{ border-bottom:1px solid #ccc; padding:6px 4px; font-size:13px; text-align:left; }
+  .p-table th{ font-size:11px; text-transform:uppercase; color:#777; border-bottom:2px solid #999; }
+  .p-table td:first-child{ color:#555; width:50%; }
+  .p-table td:last-child{ width:15%; }
+  .p-photos{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:16px; }
+  .p-photos img{ width:100%; border:1px solid #ccc; display:block; }
+  .p-photo-cap{ font-size:11px; color:#555; margin-top:3px; }
+  .p-note{ font-size:13px; white-space:pre-wrap; border:1px solid #ccc; padding:10px; border-radius:4px; }
+  .p-section-title{ font-family:sans-serif; font-size:14px; text-transform:uppercase; letter-spacing:0.08em; color:#555; margin:14px 0 6px 0; }
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast"></div>
+<div id="print-area"></div>
+
+<script>
+/* ============================================================
+   PREIMPOSTAZIONI DI DEFAULT + DISEGNO RULLO (elettronico, non foto)
+   ============================================================ */
+/* Coordinate esatte estratte dal disegno vettoriale PDF fornito dall'utente (massima fedeltà possibile). */
+const ROLLER_FIELDS = [
+  { n:1,  nome:'Ø gradino perno superiore', badgeX:284, badgeY:65,  tipo:'diam' },
+  { n:2,  nome:'Ø punta perno superiore', badgeX:170, badgeY:89, tipo:'diam' },
+  { n:3,  nome:'Lunghezza gradino perno superiore', badgeX:331, badgeY:102, tipo:'lung' },
+  { n:4,  nome:'Ø RULLO (diametro tamburo)', badgeX:170, badgeY:217, tipo:'diam' },
+  { n:5,  nome:'Lunghezza corpo rullo', badgeX:415, badgeY:217, tipo:'lung' },
+  { n:6,  nome:'Ø primo gradino perno inferiore', badgeX:170, badgeY:311, tipo:'diam' },
+  { n:7,  nome:'Ø secondo gradino perno inferiore', badgeX:170, badgeY:339, tipo:'diam' },
+  { n:8,  nome:'Ø punta perno inferiore', badgeX:170, badgeY:368, tipo:'diam' },
+  { n:9,  nome:'Lunghezza primo gradino perno inferiore', badgeX:331, badgeY:316, tipo:'lung' },
+  { n:10, nome:'Lunghezza primo+secondo gradino perno inferiore', badgeX:372, badgeY:329, tipo:'lung' },
+  { n:11, nome:'Lunghezza totale perno inferiore', badgeX:422, badgeY:346, tipo:'lung' }
+];
+function rollerSVG(){
+  return `
+  <svg viewBox="130 38 335 362" style="width:100%;display:block;background:#20222689;">
+    <defs>
+      <marker id="arrD" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#F2A93B"/>
+      </marker>
+      <marker id="arrL" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#5FA8D3"/>
+      </marker>
+      <marker id="arrT" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#5FB37E"/>
+      </marker>
+    </defs>
+    <line x1="284.2" y1="55.3" x2="284.2" y2="391.9" stroke="#3C3E44" stroke-dasharray="3 5"/>
+    <rect x="276.1" y="75.5"  width="16.2" height="26.9"  rx="1" fill="#5FA8D3" opacity="0.9"/>
+    <rect x="270.7" y="102.4" width="26.9" height="26.9"  rx="1" fill="#5FA8D3" opacity="0.85"/>
+    <rect x="250.5" y="129.3" width="67.3" height="175.0" rx="2" fill="#5FA8D3"/>
+    <rect x="264.0" y="304.4" width="40.4" height="23.6"  rx="1" fill="#5FA8D3" opacity="0.85"/>
+    <rect x="272.1" y="327.9" width="24.2" height="23.6"  rx="1" fill="#5FA8D3" opacity="0.78"/>
+    <rect x="277.4" y="351.5" width="13.5" height="33.7"  rx="1" fill="#5FA8D3" opacity="0.7"/>
+    <line x1="250.5" y1="65.4" x2="317.8" y2="65.4" stroke="#F2A93B" stroke-width="1.3" marker-start="url(#arrD)" marker-end="url(#arrD)"/>
+    <line x1="203.4" y1="88.9" x2="276.1" y2="88.9" stroke="#F2A93B" stroke-width="1.3" marker-start="url(#arrD)" marker-end="url(#arrD)"/>
+    <line x1="331.3" y1="75.5" x2="331.3" y2="129.3" stroke="#5FA8D3" stroke-width="1.3" marker-start="url(#arrL)" marker-end="url(#arrL)"/>
+    <line x1="203.4" y1="216.9" x2="250.5" y2="216.9" stroke="#F2A93B" stroke-width="1.3" marker-start="url(#arrD)" marker-end="url(#arrD)"/>
+    <line x1="415.5" y1="129.3" x2="415.5" y2="304.4" stroke="#5FA8D3" stroke-width="1.3" marker-start="url(#arrL)" marker-end="url(#arrL)"/>
+    <line x1="203.4" y1="311.1" x2="264.0" y2="311.1" stroke="#F2A93B" stroke-width="1.3" marker-start="url(#arrD)" marker-end="url(#arrD)"/>
+    <line x1="203.4" y1="339.4" x2="272.1" y2="339.4" stroke="#F2A93B" stroke-width="1.3" marker-start="url(#arrD)" marker-end="url(#arrD)"/>
+    <line x1="203.4" y1="368.3" x2="277.4" y2="368.3" stroke="#F2A93B" stroke-width="1.3" marker-start="url(#arrD)" marker-end="url(#arrD)"/>
+    <line x1="331.3" y1="304.4" x2="331.3" y2="327.9" stroke="#5FA8D3" stroke-width="1.3" marker-start="url(#arrL)" marker-end="url(#arrL)"/>
+    <line x1="371.7" y1="304.4" x2="371.7" y2="351.5" stroke="#5FA8D3" stroke-width="1.3" marker-start="url(#arrL)" marker-end="url(#arrL)"/>
+    <line x1="422.2" y1="304.4" x2="422.2" y2="385.2" stroke="#5FB37E" stroke-width="1.3" marker-start="url(#arrT)" marker-end="url(#arrT)"/>
+    ${ROLLER_FIELDS.map(f => `
+    <circle cx="${f.badgeX}" cy="${f.badgeY}" r="11" fill="${f.tipo==='diam' ? '#F2A93B' : (f.n===11 ? '#5FB37E' : '#5FA8D3')}"/>
+    <text x="${f.badgeX}" y="${f.badgeY+3.8}" text-anchor="middle" font-size="12" font-weight="700" fill="#14171A">${f.n}</text>`).join('')}
+  </svg>`;
+}
+function defaultState(){
+  return { impianti: [], presets: [] };
+}
+
+/* ============================================================
+   STORAGE (IndexedDB) — due store separati:
+   'state' per impianti/misure (leggero, riscritto spesso)
+   'photos' per le foto (una per record — pensato per migliaia di foto,
+   così aggiungerne/modificarne una non riscrive tutte le altre)
+   ============================================================ */
+const DB_NAME = 'quadernino_misure_db';
+const STORE_NAME = 'state';
+const PHOTO_STORE = 'photos';
+const STATE_KEY = 'main';
+let dbPromise = null;
+
+function openDB(){
+  return new Promise((resolve, reject)=>{
+    const req = indexedDB.open(DB_NAME, 2);
+    req.onupgradeneeded = (e)=>{
+      const db = req.result;
+      if(!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME);
+      if(!db.objectStoreNames.contains(PHOTO_STORE)){
+        const ps = db.createObjectStore(PHOTO_STORE, { keyPath:'id' });
+        ps.createIndex('nastroId', 'nastroId', { unique:false });
+      }
+    };
+    req.onsuccess = ()=> resolve(req.result);
+    req.onerror = ()=> reject(req.error);
+  });
+}
+function getDB(){
+  if(!dbPromise) dbPromise = openDB();
+  return dbPromise;
+}
+async function loadState(){
+  try{
+    const db = await getDB();
+    const loaded = await new Promise((resolve, reject)=>{
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const req = tx.objectStore(STORE_NAME).get(STATE_KEY);
+      req.onsuccess = ()=> resolve(req.result || defaultState());
+      req.onerror = ()=> reject(req.error);
+    });
+    // migrazione 1: versioni precedenti tenevano i nastri direttamente sull'impianto
+    // (senza cartelle). Li spostiamo in una cartella "Generale".
+    loaded.impianti.forEach(imp=>{
+      if(!imp.cartelle){
+        imp.cartelle = imp.nastri && imp.nastri.length
+          ? [{ id: uid(), nome: 'Generale', nastri: imp.nastri }]
+          : [];
+      }
+      delete imp.nastri;
+    });
+    // migrazione 2: versioni precedenti salvavano le foto dentro ogni nastro (n.foto).
+    // Le spostiamo nello store dedicato e lasciamo solo gli id nel nastro.
+    const allNastri = loaded.impianti.flatMap(imp => imp.cartelle.flatMap(c => c.nastri));
+    let needsMigration = false;
+    allNastri.forEach(n=>{
+      if(Array.isArray(n.foto) && n.foto.length && !n.fotoIds){
+        needsMigration = true;
+      }
+      if(!n.fotoIds) n.fotoIds = (n.foto||[]).map(f=>f.id);
+    });
+    if(needsMigration){
+      for(const n of allNastri){
+        if(Array.isArray(n.foto)){
+          for(const f of n.foto){ await savePhoto({ id:f.id, nastroId:n.id, dataUrl:f.dataUrl, nota:f.nota||'' }); }
+        }
+      }
+    }
+    allNastri.forEach(n=>{ delete n.foto; });
+    return loaded;
+  }catch(e){
+    console.warn('IndexedDB non disponibile, parto da vuoto', e);
+    return defaultState();
+  }
+}
+let saveQueue = Promise.resolve();
+function saveState(){
+  saveQueue = saveQueue.then(()=> new Promise(async (resolve)=>{
+    try{
+      const db = await getDB();
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      // salviamo solo la struttura leggera: le foto restano nel loro store
+      const lightweight = JSON.parse(JSON.stringify(state));
+      lightweight.impianti.forEach(imp=> (imp.cartelle||[]).forEach(c=> c.nastri.forEach(n=>{ delete n.foto; })));
+      tx.objectStore(STORE_NAME).put(lightweight, STATE_KEY);
+      tx.oncomplete = resolve;
+      tx.onerror = ()=>{ toast('Impossibile salvare le modifiche', 3200); resolve(); };
+    }catch(e){
+      toast('Impossibile salvare le modifiche', 3200);
+      resolve();
+    }
+  }));
+  return saveQueue;
+}
+
+/* --- foto: store dedicato, una per record --- */
+async function getPhotosForNastro(nastroId){
+  try{
+    const db = await getDB();
+    return await new Promise((resolve, reject)=>{
+      const tx = db.transaction(PHOTO_STORE, 'readonly');
+      const idx = tx.objectStore(PHOTO_STORE).index('nastroId');
+      const req = idx.getAll(nastroId);
+      req.onsuccess = ()=> resolve(req.result || []);
+      req.onerror = ()=> reject(req.error);
+    });
+  }catch(e){
+    console.warn('Impossibile leggere le foto', e);
+    return [];
+  }
+}
+function savePhoto(photo){
+  return new Promise(async (resolve)=>{
+    try{
+      const db = await getDB();
+      const tx = db.transaction(PHOTO_STORE, 'readwrite');
+      tx.objectStore(PHOTO_STORE).put(photo);
+      tx.oncomplete = ()=> resolve(true);
+      tx.onerror = ()=>{ toast('Impossibile salvare la foto', 3200); resolve(false); };
+    }catch(e){
+      toast('Impossibile salvare la foto', 3200);
+      resolve(false);
+    }
+  });
+}
+function deletePhotoRecord(photoId){
+  return new Promise(async (resolve)=>{
+    try{
+      const db = await getDB();
+      const tx = db.transaction(PHOTO_STORE, 'readwrite');
+      tx.objectStore(PHOTO_STORE).delete(photoId);
+      tx.oncomplete = ()=> resolve(true);
+      tx.onerror = ()=> resolve(false);
+    }catch(e){ resolve(false); }
+  });
+}
+let state = { impianti: [], presets: [] };
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+/* ============================================================
+   ROUTER
+   ============================================================ */
+function route(){
+  const h = location.hash.replace(/^#\/?/, '');
+  const parts = h.split('/').filter(Boolean);
+  if(parts[0] === 'impianto' && parts[1] && parts[2] === 'cartella' && parts[3] && parts[4] === 'nastro' && parts[5]){
+    return { view:'nastro', impiantoId: parts[1], cartellaId: parts[3], nastroId: parts[5] };
+  }
+  if(parts[0] === 'impianto' && parts[1] && parts[2] === 'cartella' && parts[3]){
+    return { view:'cartella', impiantoId: parts[1], cartellaId: parts[3] };
+  }
+  if(parts[0] === 'impianto' && parts[1]){
+    return { view:'impianto', impiantoId: parts[1] };
+  }
+  if(parts[0] === 'presets'){
+    return { view:'presets' };
+  }
+  return { view:'home' };
+}
+function goto(hash){ location.hash = hash; }
+window.addEventListener('hashchange', render);
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function findImpianto(id){ return state.impianti.find(i => i.id === id); }
+function findCartella(impianto, id){ return impianto.cartelle.find(c => c.id === id); }
+function findNastro(cartella, id){ return cartella.nastri.find(n => n.id === id); }
+function countNastriImpianto(imp){ return imp.cartelle.reduce((a,c)=> a + c.nastri.length, 0); }
+function countFotoImpianto(imp){ return imp.cartelle.reduce((a,c)=> a + c.nastri.reduce((b,n)=> b + (n.fotoIds||[]).length, 0), 0); }
+function esc(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function toast(msg, dur){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=> t.classList.remove('show'), dur || 1800);
+}
+
+function openModal(html, onMount){
+  const wrap = document.createElement('div');
+  wrap.className = 'modal-backdrop';
+  wrap.innerHTML = `<div class="modal">${html}</div>`;
+  wrap.addEventListener('click', (e)=>{ if(e.target === wrap) closeModal(); });
+  document.body.appendChild(wrap);
+  document.body.style.overflow = 'hidden';
+  if(onMount) onMount(wrap);
+  const firstInput = wrap.querySelector('input[type=text], textarea');
+  if(firstInput) setTimeout(()=> firstInput.focus(), 60);
+  return wrap;
+}
+function closeModal(){
+  document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+  document.body.style.overflow = '';
+}
+
+function readAndCompress(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const MAX_W = 1100;
+        const scale = Math.min(1, MAX_W / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.68));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ============================================================
+   RENDER: HOME
+   ============================================================ */
+function renderHome(root){
+  root.innerHTML = `
+    <header class="topbar">
+      <div class="titles">
+        <div class="eyebrow">Quadernino</div>
+        <h1>I tuoi impianti</h1>
+      </div>
+      <button class="gear" id="btn-presets" title="Preimpostazioni">&#9881;</button>
+    </header>
+    <main>
+      ${state.impianti.length ? `<div class="card-list" id="impianti-list"></div>` : `
+        <div class="empty-state">
+          <div class="big">Nessun impianto ancora</div>
+          <p>Crea il primo impianto per iniziare a registrare misure, foto e note.</p>
+        </div>`}
+    </main>
+    <div class="fab-row"><div class="inner">
+      <button class="btn btn-accent btn-block" id="btn-new-impianto">+ Nuovo impianto</button>
+    </div></div>
+  `;
+  if(state.impianti.length){
+    const list = root.querySelector('#impianti-list');
+    state.impianti.forEach((imp, idx)=>{
+      const nastri = countNastriImpianto(imp);
+      const foto = countFotoImpianto(imp);
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="idx">${String(idx+1).padStart(2,'0')}</div>
+        <div class="main">
+          <div class="name">${esc(imp.nome)}</div>
+          <div class="meta">${imp.cartelle.length} cartella/e &middot; ${nastri} nastro/i o macchinario/i &middot; ${foto} foto</div>
+        </div>
+        <div class="chev">&rsaquo;</div>
+      `;
+      card.addEventListener('click', ()=> goto(`impianto/${imp.id}`));
+      list.appendChild(card);
+    });
+  }
+  root.querySelector('#btn-presets').addEventListener('click', ()=> goto('presets'));
+  root.querySelector('#btn-new-impianto').addEventListener('click', ()=>{
+    openModal(`
+      <h3>Nuovo impianto</h3>
+      <input type="text" id="m-nome" placeholder="Es. Linea 2 - Selezione">
+      <div class="row">
+        <button class="btn btn-ghost" id="m-cancel">Annulla</button>
+        <button class="btn btn-accent" id="m-save">Crea</button>
+      </div>
+    `, (wrap)=>{
+      wrap.querySelector('#m-cancel').addEventListener('click', closeModal);
+      const save = ()=>{
+        const nome = wrap.querySelector('#m-nome').value.trim();
+        if(!nome) return toast("Dai un nome all'impianto");
+        const imp = { id: uid(), nome, createdAt: Date.now(), cartelle: [] };
+        state.impianti.push(imp);
+        saveState(); closeModal();
+        goto(`impianto/${imp.id}`);
+      };
+      wrap.querySelector('#m-save').addEventListener('click', save);
+      wrap.querySelector('#m-nome').addEventListener('keydown', e=>{ if(e.key==='Enter') save(); });
+    });
+  });
+}
+
+/* ============================================================
+   RENDER: IMPIANTO (elenco cartelle)
+   ============================================================ */
+function renderImpianto(root, impiantoId){
+  const imp = findImpianto(impiantoId);
+  if(!imp) return goto('');
+  root.innerHTML = `
+    <header class="topbar">
+      <button class="back" id="btn-back">&#8249;</button>
+      <div class="titles">
+        <div class="eyebrow">Impianto</div>
+        <h1>${esc(imp.nome)}</h1>
+      </div>
+      <button class="gear" id="btn-rename" title="Rinomina / elimina">&#8942;</button>
+    </header>
+    <main>
+      ${imp.cartelle.length ? `<div class="card-list" id="cartelle-list"></div>` : `
+        <div class="empty-state">
+          <div class="big">Nessuna cartella</div>
+          <p>Crea cartelle per organizzare nastri, macchinari e altro (es. "Nastri", "Selezionatori", "Altro").</p>
+        </div>`}
+      ${imp.cartelle.length ? `<div class="section"><button class="btn btn-ghost btn-block" id="btn-export-impianto">&#8681; Esporta PDF di tutto l'impianto</button></div>` : ``}
+    </main>
+    <div class="fab-row"><div class="inner">
+      <button class="btn btn-accent btn-block" id="btn-new-cartella">+ Nuova cartella</button>
+    </div></div>
+  `;
+  root.querySelector('#btn-back').addEventListener('click', ()=> goto(''));
+  if(imp.cartelle.length){
+    const list = root.querySelector('#cartelle-list');
+    imp.cartelle.forEach((c)=>{
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="idx">&#128193;</div>
+        <div class="main">
+          <div class="name">${esc(c.nome)}</div>
+          <div class="meta">${c.nastri.length} nastro/i o macchinario/i</div>
+        </div>
+        <div class="chev">&rsaquo;</div>
+      `;
+      card.addEventListener('click', ()=> goto(`impianto/${imp.id}/cartella/${c.id}`));
+      list.appendChild(card);
+    });
+    const exportBtn = root.querySelector('#btn-export-impianto');
+    if(exportBtn){
+      exportBtn.addEventListener('click', async ()=>{
+        const allNastri = imp.cartelle.flatMap(c => c.nastri.map(n => ({ ...n, _cartella: c.nome })));
+        if(!allNastri.length) return toast('Nessun nastro da esportare');
+        await exportPDF(imp, allNastri);
+      });
+    }
+  }
+  root.querySelector('#btn-new-cartella').addEventListener('click', ()=>{
+    openModal(`
+      <h3>Nuova cartella</h3>
+      <input type="text" id="m-nome" placeholder="Es. Nastri, Selezionatori, Altro">
+      <div class="row">
+        <button class="btn btn-ghost" id="m-cancel">Annulla</button>
+        <button class="btn btn-accent" id="m-save">Crea</button>
+      </div>
+    `, (wrap)=>{
+      wrap.querySelector('#m-cancel').addEventListener('click', closeModal);
+      const save = ()=>{
+        const nome = wrap.querySelector('#m-nome').value.trim();
+        if(!nome) return toast('Dai un nome alla cartella');
+        const c = { id: uid(), nome, nastri: [] };
+        imp.cartelle.push(c);
+        saveState(); closeModal();
+        goto(`impianto/${imp.id}/cartella/${c.id}`);
+      };
+      wrap.querySelector('#m-save').addEventListener('click', save);
+      wrap.querySelector('#m-nome').addEventListener('keydown', e=>{ if(e.key==='Enter') save(); });
+    });
+  });
+  root.querySelector('#btn-rename').addEventListener('click', ()=>{
+    openModal(`
+      <h3>Impianto</h3>
+      <input type="text" id="m-nome" value="${esc(imp.nome)}">
+      <div class="row">
+        <button class="btn btn-danger" id="m-del">Elimina impianto</button>
+        <button class="btn btn-accent" id="m-save">Salva</button>
+      </div>
+    `, (wrap)=>{
+      wrap.querySelector('#m-save').addEventListener('click', ()=>{
+        const nome = wrap.querySelector('#m-nome').value.trim();
+        if(!nome) return toast('Il nome non pu\u00f2 essere vuoto');
+        imp.nome = nome; saveState(); closeModal(); render();
+      });
+      wrap.querySelector('#m-del').addEventListener('click', ()=>{
+        if(confirm(`Eliminare "${imp.nome}" e tutti i suoi dati? L'azione non si pu\u00f2 annullare.`)){
+          state.impianti = state.impianti.filter(i => i.id !== imp.id);
+          saveState(); closeModal(); goto('');
+        }
+      });
+    });
+  });
+}
+
+/* ============================================================
+   RENDER: CARTELLA (elenco nastri/macchinari dentro la cartella)
+   ============================================================ */
+function renderCartella(root, impiantoId, cartellaId){
+  const imp = findImpianto(impiantoId);
+  if(!imp) return goto('');
+  const c = findCartella(imp, cartellaId);
+  if(!c) return goto(`impianto/${imp.id}`);
+  root.innerHTML = `
+    <header class="topbar">
+      <button class="back" id="btn-back">&#8249;</button>
+      <div class="titles">
+        <div class="eyebrow">${esc(imp.nome)}</div>
+        <h1>${esc(c.nome)}</h1>
+      </div>
+      <button class="gear" id="btn-rename" title="Rinomina / elimina">&#8942;</button>
+    </header>
+    <main>
+      ${c.nastri.length ? `<div class="card-list" id="nastri-list"></div>` : `
+        <div class="empty-state">
+          <div class="big">Cartella vuota</div>
+          <p>Aggiungi il primo nastro o macchinario di questa cartella.</p>
+        </div>`}
+    </main>
+    <div class="fab-row"><div class="inner">
+      <button class="btn btn-accent btn-block" id="btn-new-nastro">+ Nuovo nastro / macchinario</button>
+    </div></div>
+  `;
+  root.querySelector('#btn-back').addEventListener('click', ()=> goto(`impianto/${imp.id}`));
+  if(c.nastri.length){
+    const list = root.querySelector('#nastri-list');
+    c.nastri.forEach((n, idx)=>{
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="idx">${String(idx+1).padStart(2,'0')}</div>
+        <div class="main">
+          <div class="name">${esc(n.nome)}</div>
+          <div class="meta">${n.misure.length} misure &middot; ${(n.fotoIds||[]).length} foto${n.note ? ' &middot; nota presente' : ''}</div>
+        </div>
+        <div class="chev">&rsaquo;</div>
+      `;
+      card.addEventListener('click', ()=> goto(`impianto/${imp.id}/cartella/${c.id}/nastro/${n.id}`));
+      list.appendChild(card);
+    });
+  }
+  root.querySelector('#btn-new-nastro').addEventListener('click', ()=>{
+    openModal(`
+      <h3>Nuovo nastro / macchinario</h3>
+      <input type="text" id="m-nome" placeholder="Es. Nastro 4 oppure Steinert 2">
+      <div class="row">
+        <button class="btn btn-ghost" id="m-cancel">Annulla</button>
+        <button class="btn btn-accent" id="m-save">Crea</button>
+      </div>
+    `, (wrap)=>{
+      wrap.querySelector('#m-cancel').addEventListener('click', closeModal);
+      const save = ()=>{
+        const nome = wrap.querySelector('#m-nome').value.trim();
+        if(!nome) return toast('Dai un nome');
+        const n = { id: uid(), nome, misure: [], fotoIds: [], note: '' };
+        c.nastri.push(n);
+        saveState(); closeModal();
+        goto(`impianto/${imp.id}/cartella/${c.id}/nastro/${n.id}`);
+      };
+      wrap.querySelector('#m-save').addEventListener('click', save);
+      wrap.querySelector('#m-nome').addEventListener('keydown', e=>{ if(e.key==='Enter') save(); });
+    });
+  });
+  root.querySelector('#btn-rename').addEventListener('click', ()=>{
+    openModal(`
+      <h3>Cartella</h3>
+      <input type="text" id="m-nome" value="${esc(c.nome)}">
+      <div class="row">
+        <button class="btn btn-danger" id="m-del">Elimina cartella</button>
+        <button class="btn btn-accent" id="m-save">Salva</button>
+      </div>
+    `, (wrap)=>{
+      wrap.querySelector('#m-save').addEventListener('click', ()=>{
+        const nome = wrap.querySelector('#m-nome').value.trim();
+        if(!nome) return toast('Il nome non pu\u00f2 essere vuoto');
+        c.nome = nome; saveState(); closeModal(); render();
+      });
+      wrap.querySelector('#m-del').addEventListener('click', ()=>{
+        if(confirm(`Eliminare la cartella "${c.nome}" e tutto il suo contenuto? L'azione non si pu\u00f2 annullare.`)){
+          imp.cartelle = imp.cartelle.filter(x => x.id !== c.id);
+          saveState(); closeModal(); goto(`impianto/${imp.id}`);
+        }
+      });
+    });
+  });
+}
+
+/* ============================================================
+   RENDER: NASTRO / MACCHINARIO
+   ============================================================ */
+function renderNastro(root, impiantoId, cartellaId, nastroId){
+  const imp = findImpianto(impiantoId);
+  if(!imp) return goto('');
+  const c = findCartella(imp, cartellaId);
+  if(!c) return goto(`impianto/${imp.id}`);
+  const n = findNastro(c, nastroId);
+  if(!n) return goto(`impianto/${imp.id}/cartella/${c.id}`);
+
+  root.innerHTML = `
+    <header class="topbar">
+      <button class="back" id="btn-back">&#8249;</button>
+      <div class="titles">
+        <div class="eyebrow">${esc(imp.nome)} &rsaquo; ${esc(c.nome)}</div>
+        <h1>${esc(n.nome)}</h1>
+      </div>
+      <button class="gear" id="btn-rename" title="Rinomina / elimina">&#8942;</button>
+    </header>
+    <main>
+      <div class="section" id="sec-misure">
+        <div class="section-head">
+          <h2>Misure</h2>
+          <span class="hint">nome &rarr; valore</span>
+        </div>
+        <div id="misure-list"></div>
+        <button class="add-misura-btn" id="btn-add-misura">+ Aggiungi misura</button>
+        <button class="btn btn-accent btn-block" id="btn-roller-schema" style="margin-bottom:8px;">&#128207; Compila da disegno rullo</button>
+        <div class="preset-row">
+          <button class="btn btn-steel btn-sm" id="btn-use-preset" style="flex:1">&#9776; Usa preimpostazione</button>
+          <button class="btn btn-ghost btn-sm" id="btn-save-preset" style="flex:1">&#128190; Salva come preimpostazione</button>
+        </div>
+      </div>
+
+      <div class="section" id="sec-foto">
+        <div class="section-head">
+          <h2>Foto</h2>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="hint" id="foto-count">${(n.fotoIds||[]).length} foto</span>
+            <button class="btn btn-ghost btn-sm" id="btn-toggle-select">Seleziona</button>
+          </div>
+        </div>
+        <div class="foto-grid" id="foto-grid"></div>
+        <div id="foto-actionbar" class="foto-actionbar" style="display:none;">
+          <button class="btn btn-ghost" id="btn-cancel-select">Annulla</button>
+          <button class="btn btn-accent" id="btn-share-selected">&#128228; Condividi (<span id="sel-count">0</span>)</button>
+        </div>
+        <input type="file" id="foto-input" accept="image/*" capture="environment" multiple style="display:none">
+      </div>
+
+      <div class="section" id="sec-note">
+        <div class="section-head"><h2>Note</h2></div>
+        <textarea class="note" id="note-field" placeholder="Annotazioni libere...">${esc(n.note)}</textarea>
+      </div>
+
+      <div class="section">
+        <button class="btn btn-ghost btn-block" id="btn-export">&#8681; Esporta PDF di questa scheda</button>
+      </div>
+    </main>
+  `;
+  root.querySelector('#btn-back').addEventListener('click', ()=> goto(`impianto/${imp.id}/cartella/${c.id}`));
+
+  const misureList = root.querySelector('#misure-list');
+  function renderMisure(){
+    misureList.innerHTML = '';
+    n.misure.forEach(m=>{
+      const row = document.createElement('div');
+      row.className = 'misura-row';
+      row.innerHTML = `
+        <input type="text" class="nome" value="${esc(m.nome)}" placeholder="nome campo">
+        <div class="lcd"><input type="text" class="valore" value="${esc(m.valore)}" placeholder="valore"></div>
+        <div class="qty-box"><input type="number" inputmode="numeric" min="0" class="qty" value="${esc(m.quantita || '')}" placeholder="0"><span class="qty-label">PEZZI</span></div>
+        <button class="del">&times;</button>
+      `;
+      row.querySelector('.nome').addEventListener('input', e=>{ m.nome = e.target.value; saveState(); });
+      row.querySelector('.valore').addEventListener('input', e=>{ m.valore = e.target.value; saveState(); });
+      row.querySelector('.qty').addEventListener('input', e=>{ m.quantita = e.target.value; saveState(); });
+      row.querySelector('.del').addEventListener('click', ()=>{
+        n.misure = n.misure.filter(x => x.id !== m.id);
+        saveState(); renderMisure();
+      });
+      misureList.appendChild(row);
+    });
+  }
+  renderMisure();
+
+  root.querySelector('#btn-add-misura').addEventListener('click', ()=>{
+    n.misure.push({ id: uid(), nome:'', valore:'', quantita:'' });
+    saveState(); renderMisure();
+    const inputs = misureList.querySelectorAll('.nome');
+    if(inputs.length) inputs[inputs.length-1].focus();
+  });
+
+  root.querySelector('#btn-roller-schema').addEventListener('click', ()=> openRollerSchema(n));
+
+  root.querySelector('#btn-use-preset').addEventListener('click', ()=>{
+    if(!state.presets.length){
+      return openModal(`
+        <h3>Nessuna preimpostazione</h3>
+        <p style="color:var(--text-dim);font-size:14px;margin-bottom:14px;">Non hai ancora salvato nessuna preimpostazione. Puoi crearne una da "Salva come preimpostazione" dopo aver compilato le misure.</p>
+        <button class="btn btn-accent btn-block" onclick="closeModal()">Ho capito</button>
+      `);
+    }
+    openModal(`
+      <h3>Scegli una preimpostazione</h3>
+      <div id="preset-pick-list"></div>
+      <div class="row"><button class="btn btn-ghost btn-block" id="m-cancel">Annulla</button></div>
+    `, (wrap)=>{
+      const listEl = wrap.querySelector('#preset-pick-list');
+      state.presets.forEach(p=>{
+        const el = document.createElement('div');
+        el.className = 'preset-pick';
+        el.innerHTML = `<div><div class="name">${esc(p.nome)}</div><div class="fields">${p.campi.map(esc).join(' &middot; ')}</div></div><button class="btn btn-accent btn-sm">Applica</button>`;
+        el.querySelector('button').addEventListener('click', ()=>{
+          const existing = new Set(n.misure.map(m => m.nome.trim().toLowerCase()));
+          p.campi.forEach(c=>{
+            if(!existing.has(c.trim().toLowerCase())){
+              n.misure.push({ id: uid(), nome:c, valore:'' });
+            }
+          });
+          saveState(); renderMisure(); closeModal();
+          toast('Preimpostazione applicata');
+        });
+        listEl.appendChild(el);
+      });
+      wrap.querySelector('#m-cancel').addEventListener('click', closeModal);
+    });
+  });
+
+  root.querySelector('#btn-save-preset').addEventListener('click', ()=>{
+    const campi = n.misure.map(m => m.nome.trim()).filter(Boolean);
+    if(!campi.length) return toast('Aggiungi prima almeno una misura con un nome');
+    openModal(`
+      <h3>Salva come preimpostazione</h3>
+      <p style="color:var(--text-dim);font-size:13px;margin-bottom:10px;">Verranno salvati questi nomi campo: ${campi.map(esc).join(', ')}</p>
+      <input type="text" id="m-nome" placeholder="Nome preimpostazione, es. Nastro standard">
+      <div class="row">
+        <button class="btn btn-ghost" id="m-cancel">Annulla</button>
+        <button class="btn btn-accent" id="m-save">Salva</button>
+      </div>
+    `, (wrap)=>{
+      wrap.querySelector('#m-cancel').addEventListener('click', closeModal);
+      wrap.querySelector('#m-save').addEventListener('click', ()=>{
+        const nome = wrap.querySelector('#m-nome').value.trim();
+        if(!nome) return toast('Dai un nome alla preimpostazione');
+        state.presets.push({ id: uid(), nome, campi: [...new Set(campi)] });
+        saveState(); closeModal();
+        toast('Preimpostazione salvata');
+      });
+    });
+  });
+
+  const fotoGrid = root.querySelector('#foto-grid');
+  const fotoInput = root.querySelector('#foto-input');
+  const fotoCountEl = root.querySelector('#foto-count');
+  const btnToggleSelect = root.querySelector('#btn-toggle-select');
+  const actionBar = root.querySelector('#foto-actionbar');
+  const btnShareSelected = root.querySelector('#btn-share-selected');
+  const selCountEl = root.querySelector('#sel-count');
+  let fotoCache = [];
+  let selectMode = false;
+  let selected = new Set();
+  function updateFotoCount(){
+    if(!n.fotoIds) n.fotoIds = [];
+    if(fotoCountEl) fotoCountEl.textContent = `${n.fotoIds.length} foto`;
+  }
+  function updateSelUI(){
+    selCountEl.textContent = selected.size;
+    fotoGrid.querySelectorAll('.foto-card').forEach(card=>{
+      card.classList.toggle('selected', selected.has(card.dataset.id));
+    });
+  }
+  async function renderFoto(){
+    fotoGrid.innerHTML = `<div class="foto-add" id="foto-loading" style="opacity:0.5;">&#8987;</div>`;
+    fotoCache = await getPhotosForNastro(n.id);
+    fotoGrid.innerHTML = '';
+    fotoCache.forEach(f=>{
+      const t = document.createElement('div');
+      t.className = 'foto-card' + (selectMode ? ' selectable' : '');
+      t.dataset.id = f.id;
+      t.innerHTML = `
+        <div class="foto-img">
+          <img src="${f.dataUrl}" loading="lazy">
+          ${selectMode ? `<div class="foto-check">&#10003;</div>` : `<button class="rm">&times;</button>`}
+        </div>
+        <input type="text" class="foto-caption" placeholder="Nota per questa foto..." value="${esc(f.nota || '')}" ${selectMode ? 'disabled' : ''}>
+      `;
+      if(selectMode){
+        t.addEventListener('click', ()=>{
+          if(selected.has(f.id)) selected.delete(f.id); else selected.add(f.id);
+          updateSelUI();
+        });
+      }else{
+        t.querySelector('.rm').addEventListener('click', async (e)=>{
+          e.stopPropagation();
+          await deletePhotoRecord(f.id);
+          n.fotoIds = n.fotoIds.filter(id => id !== f.id);
+          saveState(); updateFotoCount(); renderFoto();
+        });
+        t.querySelector('.foto-caption').addEventListener('input', e=>{
+          f.nota = e.target.value; savePhoto(f);
+        });
+      }
+      fotoGrid.appendChild(t);
+    });
+    if(!selectMode){
+      const add = document.createElement('div');
+      add.className = 'foto-add';
+      add.textContent = '+';
+      add.addEventListener('click', ()=> fotoInput.click());
+      fotoGrid.appendChild(add);
+    }
+    updateSelUI();
+  }
+  renderFoto();
+  fotoInput.addEventListener('change', async ()=>{
+    const files = Array.from(fotoInput.files || []);
+    if(!n.fotoIds) n.fotoIds = [];
+    for(const file of files){
+      try{
+        const dataUrl = await readAndCompress(file);
+        const photo = { id: uid(), nastroId: n.id, dataUrl, nota: '' };
+        await savePhoto(photo);
+        n.fotoIds.push(photo.id);
+      }catch(e){ console.warn('Errore lettura foto', e); }
+    }
+    saveState(); updateFotoCount(); renderFoto();
+    fotoInput.value = '';
+  });
+
+  function exitSelectMode(){
+    selectMode = false; selected.clear();
+    btnToggleSelect.textContent = 'Seleziona';
+    actionBar.style.display = 'none';
+    renderFoto();
+  }
+  btnToggleSelect.addEventListener('click', ()=>{
+    selectMode = !selectMode;
+    if(selectMode){
+      btnToggleSelect.textContent = 'Annulla';
+      actionBar.style.display = 'flex';
+    }else{
+      exitSelectMode();
+      return;
+    }
+    renderFoto();
+  });
+  root.querySelector('#btn-cancel-select').addEventListener('click', exitSelectMode);
+  btnShareSelected.addEventListener('click', async ()=>{
+    if(!selected.size) return toast('Seleziona almeno una foto');
+    try{
+      const files = [];
+      for(const f of fotoCache){
+        if(!selected.has(f.id)) continue;
+        const res = await fetch(f.dataUrl);
+        const blob = await res.blob();
+        files.push(new File([blob], `${(n.nome||'foto').replace(/[^a-z0-9]+/gi,'_')}_${f.id}.jpg`, { type:'image/jpeg' }));
+      }
+      if(navigator.canShare && navigator.canShare({ files })){
+        await navigator.share({ files, title: n.nome });
+        exitSelectMode();
+      }else{
+        toast('Condivisione non supportata su questo browser: scarica le foto singolarmente', 3200);
+      }
+    }catch(e){
+      if(e.name !== 'AbortError') toast('Condivisione non riuscita', 2400);
+    }
+  });
+
+  root.querySelector('#note-field').addEventListener('input', e=>{
+    n.note = e.target.value; saveState();
+  });
+
+  root.querySelector('#btn-rename').addEventListener('click', ()=>{
+    openModal(`
+      <h3>Nastro / macchinario</h3>
+      <input type="text" id="m-nome" value="${esc(n.nome)}">
+      <div class="row">
+        <button class="btn btn-danger" id="m-del">Elimina</button>
+        <button class="btn btn-accent" id="m-save">Salva</button>
+      </div>
+    `, (wrap)=>{
+      wrap.querySelector('#m-save').addEventListener('click', ()=>{
+        const nome = wrap.querySelector('#m-nome').value.trim();
+        if(!nome) return toast('Il nome non pu\u00f2 essere vuoto');
+        n.nome = nome; saveState(); closeModal(); render();
+      });
+      wrap.querySelector('#m-del').addEventListener('click', ()=>{
+        if(confirm(`Eliminare "${n.nome}"? L'azione non si pu\u00f2 annullare.`)){
+          c.nastri = c.nastri.filter(x => x.id !== n.id);
+          saveState(); closeModal(); goto(`impianto/${imp.id}/cartella/${c.id}`);
+        }
+      });
+    });
+  });
+
+  root.querySelector('#btn-export').addEventListener('click', async ()=>{ await exportPDF(imp, [n]); });
+}
+
+/* ============================================================
+   RENDER: PRESETS MANAGER
+   ============================================================ */
+function renderPresets(root){
+  root.innerHTML = `
+    <header class="topbar">
+      <button class="back" id="btn-back">&#8249;</button>
+      <div class="titles">
+        <div class="eyebrow">Impostazioni</div>
+        <h1>Preimpostazioni</h1>
+      </div>
+    </header>
+    <main>
+      ${state.presets.length ? `<div class="card-list" id="presets-list"></div>` : `
+        <div class="empty-state">
+          <div class="big">Nessuna preimpostazione</div>
+          <p>Le preimpostazioni sono set di nomi-campo riutilizzabili. Creale qui, oppure direttamente da una scheda con "Salva come preimpostazione".</p>
+        </div>`}
+    </main>
+    <div class="fab-row"><div class="inner">
+      <button class="btn btn-accent btn-block" id="btn-new-preset">+ Nuova preimpostazione</button>
+    </div></div>
+  `;
+  root.querySelector('#btn-back').addEventListener('click', ()=> goto(''));
+  if(state.presets.length){
+    const list = root.querySelector('#presets-list');
+    state.presets.forEach(p=>{
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="main">
+          <div class="name">${esc(p.nome)}</div>
+          <div class="meta">${p.campi.map(esc).join(' &middot; ')}</div>
+        </div>
+        <div class="chev">&#9998;</div>
+      `;
+      card.addEventListener('click', ()=> openPresetEditor(p));
+      list.appendChild(card);
+    });
+  }
+  root.querySelector('#btn-new-preset').addEventListener('click', ()=>{
+    const p = { id: uid(), nome:'', campi: [] };
+    openPresetEditor(p, true);
+  });
+}
+
+function openPresetEditor(p, isNew){
+  const wrap = openModal(`
+    <h3>${isNew ? 'Nuova preimpostazione' : 'Modifica preimpostazione'}</h3>
+    <input type="text" id="p-nome" placeholder="Nome, es. Nastro standard" value="${esc(p.nome)}">
+    <div id="p-fields"></div>
+    <div class="row" style="margin-bottom:14px;">
+      <input type="text" id="p-newfield" placeholder="Nuovo nome campo" style="margin-bottom:0;">
+      <button class="btn btn-steel btn-sm" id="p-addfield" style="flex:0 0 auto;">+</button>
+    </div>
+    <div class="row">
+      ${isNew ? '' : '<button class="btn btn-danger" id="p-del">Elimina</button>'}
+      <button class="btn btn-ghost" id="p-cancel">Annulla</button>
+      <button class="btn btn-accent" id="p-save">Salva</button>
+    </div>
+  `, (wrap)=>{
+    const fieldsEl = wrap.querySelector('#p-fields');
+    const campiLocal = [...p.campi];
+    function renderFields(){
+      fieldsEl.innerHTML = '';
+      campiLocal.forEach((c, i)=>{
+        const el = document.createElement('div');
+        el.className = 'preset-field-item';
+        el.innerHTML = `<span>${esc(c)}</span><button>&times;</button>`;
+        el.querySelector('button').addEventListener('click', ()=>{
+          campiLocal.splice(i,1); renderFields();
+        });
+        fieldsEl.appendChild(el);
+      });
+    }
+    renderFields();
+    const addField = ()=>{
+      const input = wrap.querySelector('#p-newfield');
+      const val = input.value.trim();
+      if(!val) return;
+      campiLocal.push(val);
+      input.value = '';
+      renderFields();
+      input.focus();
+    };
+    wrap.querySelector('#p-addfield').addEventListener('click', addField);
+    wrap.querySelector('#p-newfield').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); addField(); }});
+    wrap.querySelector('#p-cancel').addEventListener('click', closeModal);
+    wrap.querySelector('#p-save').addEventListener('click', ()=>{
+      const nome = wrap.querySelector('#p-nome').value.trim();
+      if(!nome) return toast('Dai un nome alla preimpostazione');
+      if(!campiLocal.length) return toast('Aggiungi almeno un campo');
+      p.nome = nome; p.campi = campiLocal;
+      if(isNew) state.presets.push(p);
+      saveState(); closeModal(); render();
+    });
+    const delBtn = wrap.querySelector('#p-del');
+    if(delBtn){
+      delBtn.addEventListener('click', ()=>{
+        if(confirm(`Eliminare la preimpostazione "${p.nome}"?`)){
+          state.presets = state.presets.filter(x => x.id !== p.id);
+          saveState(); closeModal(); render();
+        }
+      });
+    }
+  });
+}
+
+/* ============================================================
+   SCHEMA VISUALE RULLO — disegno elettronico con caselle da compilare
+   ============================================================ */
+function openRollerSchema(n){
+  ROLLER_FIELDS.forEach(f=>{
+    if(!n.misure.find(m => m.nome === f.nome)){
+      n.misure.push({ id: uid(), nome: f.nome, valore: '', quantita: '' });
+    }
+  });
+  saveState();
+
+  const wrap = document.createElement('div');
+  wrap.className = 'modal-backdrop';
+  wrap.style.alignItems = 'center';
+  wrap.innerHTML = `
+    <div class="modal" style="max-width:480px; max-height:92vh; overflow-y:auto; border-radius:16px; border:1px solid var(--line);">
+      <h3>Schema misure rullo</h3>
+      <p style="color:var(--text-dim);font-size:12.5px;margin:-4px 0 14px 0;">Ogni numero sul disegno corrisponde alla riga con lo stesso numero qui sotto: compila l\u00ec il valore.</p>
+      <div style="border-radius:10px; overflow:hidden; border:1px solid var(--line);">${rollerSVG()}</div>
+      <div id="roller-fields" style="margin-top:14px;"></div>
+      <div class="row" style="margin-top:10px;"><button class="btn btn-accent btn-block" id="roller-done">Fatto</button></div>
+    </div>
+  `;
+  document.body.appendChild(wrap);
+  document.body.style.overflow = 'hidden';
+
+  const list = wrap.querySelector('#roller-fields');
+  ROLLER_FIELDS.forEach(f=>{
+    const m = n.misure.find(x => x.nome === f.nome);
+    const row = document.createElement('div');
+    row.className = 'misura-row';
+    const badgeColor = f.tipo === 'diam' ? 'var(--accent)' : 'var(--steel)';
+    row.innerHTML = `
+      <span style="flex:0 0 auto; width:22px; height:22px; border-radius:50%; background:${badgeColor}; color:#14171A; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">${f.n}</span>
+      <span style="flex:1; font-size:11.5px; color:var(--text-dim); padding:0 6px;">${esc(f.nome)}</span>
+      <div class="lcd" style="flex:0 0 30%;"><input type="text" class="valore" value="${esc(m.valore)}"></div>
+      <div class="qty-box"><input type="number" inputmode="numeric" min="0" class="qty" value="${esc(m.quantita || '')}" placeholder="0"><span class="qty-label">PEZZI</span></div>
+    `;
+    row.querySelector('.valore').addEventListener('input', e=>{ m.valore = e.target.value; saveState(); });
+    row.querySelector('.qty').addEventListener('input', e=>{ m.quantita = e.target.value; saveState(); });
+    list.appendChild(row);
+  });
+
+  function finish(){
+    wrap.remove();
+    document.body.style.overflow = '';
+    render();
+  }
+  wrap.addEventListener('click', (e)=>{ if(e.target === wrap) finish(); });
+  wrap.querySelector('#roller-done').addEventListener('click', finish);
+}
+
+/* ============================================================
+   PDF EXPORT (via browser print)
+   ============================================================ */
+async function exportPDF(imp, nastri){
+  const area = document.getElementById('print-area');
+  const dateStr = new Date().toLocaleDateString('it-IT', { day:'2-digit', month:'2-digit', year:'numeric' });
+  let html = `
+    <div class="p-head">
+      <div class="eyebrow">Quadernino misure &middot; ${esc(dateStr)}</div>
+      <h1>${esc(imp.nome)}</h1>
+    </div>
+  `;
+  for(const n of nastri){
+    const titolo = n._cartella ? `${esc(n._cartella)} &rsaquo; ${esc(n.nome)}` : esc(n.nome);
+    html += `<div class="p-section-title">${titolo}</div>`;
+    if(n.misure.length){
+      html += `<table class="p-table"><tr><th>Misura</th><th>Valore</th><th>Pezzi</th></tr>`;
+      n.misure.forEach(m=>{
+        html += `<tr><td>${esc(m.nome) || '(senza nome)'}</td><td>${esc(m.valore) || '&mdash;'}</td><td>${esc(m.quantita) || '&mdash;'}</td></tr>`;
+      });
+      html += `</table>`;
+    }
+    const fotoList = await getPhotosForNastro(n.id);
+    if(fotoList.length){
+      html += `<div class="p-photos">`;
+      fotoList.forEach(f=> html += `<div><img src="${f.dataUrl}">${f.nota ? `<div class="p-photo-cap">${esc(f.nota)}</div>` : ''}</div>`);
+      html += `</div>`;
+    }
+    if(n.note){
+      html += `<div class="p-note">${esc(n.note)}</div>`;
+    }
+  }
+  area.innerHTML = html;
+  setTimeout(()=> window.print(), 80);
+}
+
+/* ============================================================
+   MAIN RENDER
+   ============================================================ */
+function render(){
+  const root = document.getElementById('app');
+  const r = route();
+  if(r.view === 'home') renderHome(root);
+  else if(r.view === 'impianto') renderImpianto(root, r.impiantoId);
+  else if(r.view === 'cartella') renderCartella(root, r.impiantoId, r.cartellaId);
+  else if(r.view === 'nastro') renderNastro(root, r.impiantoId, r.cartellaId, r.nastroId);
+  else if(r.view === 'presets') renderPresets(root);
+  window.scrollTo(0,0);
+}
+async function init(){
+  state = await loadState();
+  render();
+}
+init();
+</script>
+</body>
+</html>
